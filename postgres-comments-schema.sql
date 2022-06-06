@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS public.comments
     id bigserial NOT NULL,
     title character varying(500),
     comment_text text,
+    "responseId" bigint,
     PRIMARY KEY (id)
 );
 
@@ -17,7 +18,7 @@ COMMENT ON TABLE public.comments
 CREATE TABLE IF NOT EXISTS public.replyto
 (
     "responseId" bigserial NOT NULL,
-    "commentId" integer,
+    "commentId" bigint,
     title character varying(500),
     replytext text,
     PRIMARY KEY ("responseId")
@@ -25,6 +26,14 @@ CREATE TABLE IF NOT EXISTS public.replyto
 
 COMMENT ON TABLE public.replyto
     IS 'table to store replies of comments';
+
+ALTER TABLE IF EXISTS public.comments
+    ADD FOREIGN KEY ("responseId")
+    REFERENCES public.replyto ("responseId") MATCH SIMPLE
+    ON UPDATE CASCADE
+    ON DELETE CASCADE
+    NOT VALID;
+
 
 ALTER TABLE IF EXISTS public.replyto
     ADD FOREIGN KEY ("commentId")
